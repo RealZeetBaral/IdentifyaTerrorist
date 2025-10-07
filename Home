@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Islamic Perspectives Quiz</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'quiz-primary': '#5D5CDE',
+                        'quiz-secondary': '#4F46E5',
+                        'quiz-accent': '#06B6D4',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .quiz-app-option {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .quiz-app-option:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(93, 92, 222, 0.15);
+        }
+        .dark .quiz-app-option:hover {
+            box-shadow: 0 8px 25px rgba(93, 92, 222, 0.25);
+        }
+        .quiz-app-option.quiz-app-selected {
+            border-color: #5D5CDE;
+            background: linear-gradient(135deg, rgba(93, 92, 222, 0.1), rgba(93, 92, 222, 0.05));
+            transform: translateY(-1px);
+        }
+        .quiz-app-progress-bar {
+            transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .quiz-app-fade-in {
+            animation: quiz-app-fadeIn 0.5s ease-out;
+        }
+        .quiz-app-slide-up {
+            animation: quiz-app-slideUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        @keyframes quiz-app-fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes quiz-app-slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .quiz-app-gradient-bg {
+            background: linear-gradient(135deg, #5D5CDE 0%, #4F46E5 100%);
+        }
+        .quiz-app-glass-effect {
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .dark .quiz-app-glass-effect {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .quiz-app-result-liberal {
+            background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+        }
+        .quiz-app-result-moderate {
+            background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+        }
+        .quiz-app-result-conservative {
+            background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+        }
+        .quiz-app-result-extremist {
+            background: linear-gradient(135deg, #7C2D12 0%, #451A03 100%);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 text-gray-900 dark:text-white transition-all duration-300 min-h-screen">
+    <!-- Header -->
+    <header class="quiz-app-gradient-bg text-white shadow-2xl">
+        <div class="max-w-6xl mx-auto px-4 py-8">
+            <div class="text-center">
+                <h1 class="text-3xl md:text-4xl font-bold mb-3 tracking-tight">
+                    Islamic Perspectives Quiz
+                </h1>
+                <p class="text-blue-100 text-lg max-w-2xl mx-auto leading-relaxed">
+                    Explore your views on 20 key topics related to Islam, society, and modern life
+                </p>
+            </div>
+        </div>
+    </header>
+
+    <!-- Progress Section -->
+    <div class="max-w-4xl mx-auto px-4 py-6" id="quiz-app-progress-section">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 quiz-app-glass-effect">
+            <div class="flex justify-between items-center mb-3">
+                <span id="quiz-app-progress-text" class="text-sm font-medium text-gray-600 dark:text-gray-400">Question 1 of 20</span>
+                <span id="quiz-app-progress-percent" class="text-sm font-bold text-quiz-primary">5%</span>
+            </div>
+            <div class="bg-gray-200 dark:bg-gray-700 rounded-full h-4 overflow-hidden shadow-inner">
+                <div id="quiz-app-progress-bar" class="quiz-app-progress-bar quiz-app-gradient-bg h-4 rounded-full shadow-sm" style="width: 5%"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quiz Container -->
+    <div id="quiz-app-quiz-container" class="max-w-4xl mx-auto px-4 pb-8">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+            <!-- Question Header -->
+            <div class="quiz-app-gradient-bg text-white p-6">
+                <h2 id="quiz-app-question-number" class="text-xl font-bold mb-2">Question 1</h2>
+            </div>
+            
+            <!-- Question Content -->
+            <div class="p-6 md:p-8">
+                <div class="mb-8">
+                    <p id="quiz-app-question-text" class="text-lg md:text-xl text-gray-900 dark:text-white leading-relaxed font-medium"></p>
+                </div>
+
+                <!-- Options -->
+                <div id="quiz-app-options-container" class="space-y-4 mb-8">
+                    <!-- Options will be dynamically populated -->
+                </div>
+
+                <!-- Navigation -->
+                <div class="flex justify-between items-center pt-6 border-t border-gray-200 dark:border-gray-700">
+                    <button id="quiz-app-prev-btn" class="px-6 py-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-600 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed font-medium" disabled>
+                        ← Previous
+                    </button>
+                    <button id="quiz-app-next-btn" class="px-8 py-3 quiz-app-gradient-bg text-white rounded-xl hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed font-medium" disabled>
+                        Next →
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Container -->
+    <div id="quiz-app-results-container" class="max-w-5xl mx-auto px-4 pb-8 hidden">
+        <div class="quiz-app-slide-up">
+            <!-- Results Header -->
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden mb-6">
+                <div class="quiz-app-gradient-bg text-white p-6 text-center">
+                    <div class="w-20 h-20 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <h2 class="text-3xl font-bold mb-2">Quiz Completed!</h2>
+                    <p class="text-blue-100">Your responses have been analyzed</p>
+                </div>
+            </div>
+
+            <!-- Analysis Results -->
+            <div class="grid md:grid-cols-2 gap-6 mb-6">
+                <!-- Completion Stats -->
+                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-200 dark:border-gray-700">
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Completion Rate</h3>
+                    <div class="text-center">
+                        <div class="text-5xl font-bold quiz-app-gradient-bg bg-clip-text text-transparent mb-2" id="quiz-app-completion-rate">100%</div>
+                        <p class="text-gray-600 dark:text-gray-400" id="quiz-app-answered-count">20 out of 20 questions answered</p>
+                    </div>
+                </div>
+
+                <!-- Ideological Analysis -->
+                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-200 dark:border-gray-700">
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Ideological Analysis</h3>
+                    <div class="text-center">
+                        <div id="quiz-app-ideology-badge" class="inline-block px-4 py-2 rounded-full text-white font-bold text-lg mb-3">
+                            <!-- Badge will be populated -->
+                        </div>
+                        <div class="text-3xl font-bold text-gray-900 dark:text-white mb-2" id="quiz-app-ideology-score">0%</div>
+                        <p class="text-gray-600 dark:text-gray-400">Based on your responses</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detailed Analysis -->
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 md:p-8 border border-gray-200 dark:border-gray-700 mb-6">
+                <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Detailed Analysis</h3>
+                <div id="quiz-app-analysis-content" class="prose prose-lg max-w-none dark:prose-invert">
+                    <!-- Analysis content will be populated -->
+                </div>
+            </div>
+
+            <!-- Answer Distribution -->
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-200 dark:border-gray-700 mb-6">
+                <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-6">Answer Distribution</h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900 dark:to-green-800 p-4 rounded-xl text-center">
+                        <div class="text-3xl font-bold text-green-600 dark:text-green-400 mb-1" id="quiz-app-option-a">0</div>
+                        <div class="text-sm font-medium text-green-700 dark:text-green-300">Liberal (A)</div>
+                    </div>
+                    <div class="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900 dark:to-blue-800 p-4 rounded-xl text-center">
+                        <div class="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-1" id="quiz-app-option-b">0</div>
+                        <div class="text-sm font-medium text-blue-700 dark:text-blue-300">Moderate (B)</div>
+                    </div>
+                    <div class="bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900 dark:to-orange-800 p-4 rounded-xl text-center">
+                        <div class="text-3xl font-bold text-orange-600 dark:text-orange-400 mb-1" id="quiz-app-option-c">0</div>
+                        <div class="text-sm font-medium text-orange-700 dark:text-orange-300">Conservative (C)</div>
+                    </div>
+                    <div class="bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900 dark:to-red-800 p-4 rounded-xl text-center">
+                        <div class="text-3xl font-bold text-red-600 dark:text-red-400 mb-1" id="quiz-app-option-d">0</div>
+                        <div class="text-sm font-medium text-red-700 dark:text-red-300">Extremist (D)</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="text-center">
+                <button id="quiz-app-restart-btn" class="px-8 py-4 quiz-app-gradient-bg text-white rounded-xl hover:shadow-lg transition-all duration-200 font-medium text-lg">
+                    Take Quiz Again
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Dark mode handling
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark');
+        }
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+            if (event.matches) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        });
+
+        // Quiz questions data
+        const quizAppQuestions = [
+            {
+                question: "If there is a conflict between Islam and science, what will you do?",
+                options: [
+                    "You will prioritize the evidence of science and reject the Quran because it becomes unproven.",
+                    "You will try to reconcile both.",
+                    "You will prioritize Islam, but will also take science into consideration.",
+                    "You will reject the science that goes against Islam, because the Quran is unchangeable."
+                ]
+            },
+            {
+                question: "What is your perspective regarding women's rights?",
+                options: [
+                    "Equal rights for men and women — human rights are above religious rules; I will ignore the writings of the Quran.",
+                    "I will give women's rights within cultural boundaries.",
+                    "I will determine the role of women according to Islamic rules.",
+                    "I will control women's rights according to the laws of the Quran - Shariah."
+                ]
+            },
+            {
+                question: "What meaning does Jihad hold for you?",
+                options: [
+                    "It is an old concept created by hypocrites and is completely irrelevant in modern society.",
+                    "Internal struggle, such as self-improvement.",
+                    "Necessary war for the protection of Islam.",
+                    "Armed war against those who hold animosity against Islam — it is Farz (obligatory)."
+                ]
+            },
+            {
+                question: "What is your opinion about Secularism?",
+                options: [
+                    "It is essential for ensuring equal rights for all.",
+                    "It is good, but respect for Islam must be maintained.",
+                    "It reduces the influence of Islam in society - this is a problem.",
+                    "It is against Islam - Shariah law should be applied."
+                ]
+            },
+            {
+                question: "What is your idea about Evolution?",
+                options: [
+                    "It is a proven scientific truth — it is stronger than the fabricated stories of the Quran.",
+                    "It is a theory - it can be reconciled with the description in the Quran.",
+                    "It is in conflict with the theory of creation described in the Quran.",
+                    "It is Kufr (disbelief), and the theory of creation described in the Quran is the only truth — that science is false."
+                ]
+            },
+            {
+                question: "Your perspective towards people of other religions?",
+                options: [
+                    "Everyone is equal regardless of religion.",
+                    "I respect them, but Islam is correct.",
+                    "They are on the wrong path, they need to be brought to Islam.",
+                    "They are Kafirs, and they should be fought against."
+                ]
+            },
+            {
+                question: "What is your opinion about the application of Shariah law?",
+                options: [
+                    "It is old and made by bad people — it does not match with modern law; it should be completely rejected.",
+                    "Some parts can be applied, but not all.",
+                    "It is good for society, but should be applied gradually.",
+                    "Applying complete Shariah is Farz (obligatory), even if by force."
+                ]
+            },
+            {
+                question: "Your opinion about Homosexuality?",
+                options: [
+                    "It is natural; I support it as a right.",
+                    "It is a personal matter - but it is better to keep it secret in society.",
+                    "It is Haram (forbidden) according to Islam, but there should be no punishment.",
+                    "It is a sin, and punishment must be given according to Shariah."
+                ]
+            },
+            {
+                question: "Democracy vs. Caliphate?",
+                options: [
+                    "Democracy is the best, because everyone has a voice in it.",
+                    "Democracy is good, but Islamic values need to be added.",
+                    "Caliphate is good, because it has Islamic leadership.",
+                    "Democracy is Kufr, the Caliphate must be established even by fighting for it."
+                ]
+            },
+            {
+                question: "Regarding criticism of Islam, the Quran, and its author Muhammad?",
+                options: [
+                    "It is a right - freedom of thought.",
+                    "Criticism can be done with respect.",
+                    "It is disrespect towards Islam - such criticism should be avoided.",
+                    "Criticism of Islam is Blasphemy — it is punishable."
+                ]
+            },
+            {
+                question: "Your perspective regarding war and peace?",
+                options: [
+                    "Peace is always the priority - war is the last option.",
+                    "I want peace, but war can be waged to protect Islam.",
+                    "War for Islam is Farz (obligatory).",
+                    "Waging war against those who fight Islam is Jihad - reward is received."
+                ]
+            },
+            {
+                question: "Your idea about scientific progress and Islam?",
+                options: [
+                    "Science is beyond the boundaries of Islam and benefits everyone.",
+                    "Science should be made compatible with Islam.",
+                    "Islam will control science.",
+                    "The science that is against Islam must be rejected."
+                ]
+            },
+            {
+                question: "Regarding Atheism?",
+                options: [
+                    "It is a personal choice - I respect it.",
+                    "I try to understand it, but Islam is correct.",
+                    "Atheists are wrong, they need to be brought back to Islam.",
+                    "Atheism is Kufr and is punishable."
+                ]
+            },
+            {
+                question: "What is your opinion about the role of Islam in education?",
+                options: [
+                    "Education based on reason should be secular, free from Islam.",
+                    "Islamic values can be added.",
+                    "Islamic education should be primary.",
+                    "Only Islamic education - otherwise it will spread Kufr."
+                ]
+            },
+            {
+                question: "Definition of terrorism?",
+                options: [
+                    "Violence committed in the name of Islam is terrorism.",
+                    "Terrorism is political - not Islamic.",
+                    "Calling Islam terrorism is wrong — violence for protecting Islam is correct and legitimate in the eyes of the Quran.",
+                    "Violence for protecting Islam is Jaiz (permissible)."
+                ]
+            },
+            {
+                question: "Human rights and Islam?",
+                options: [
+                    "Human rights are above religion - Islam comes later.",
+                    "The two should be reconciled.",
+                    "Islam will determine human rights.",
+                    "Human rights that are against Islam should be rejected."
+                ]
+            },
+            {
+                question: "The ideal of an Islamic state?",
+                options: [
+                    "A secular state is ideal.",
+                     "A democratic state with Islamic values is ideal.",
+                    "An Islamic state following Shariah is ideal.",
+                    "The Caliphate should be established by force."
+                ]
+            },
+            {
+                question: "Towards religious minorities?",
+                options: [
+                    "Completely equal rights.",
+                    "They should be converted to Islam for their protection.",
+                    "They are Dhimmi - they must pay Jizya tax.",
+                    "They are Kafirs - they should be expelled from the state."
+                ]
+            },
+            {
+                question: "Religious beliefs of scientists?",
+                options: [
+                    "Many scientists are atheists - that is fine.",
+                    "Scientists can also be Islamists.",
+                    "Scientists must follow Islam.",
+                    "Those scientists who are against Islam are Kufr (disbelievers)."
+                ]
+            },
+            {
+                question: "What should the future society be like?",
+                options: [
+                    "Rational, secular, science-based.",
+                    "Modern with religious values.",
+                    "An Islam-majority society.",
+                    "Completely Islamic, governed by Shariah, protected with militancy."
+                ]
+            }
+        ];
+
+        // Quiz application state
+        class QuizAppState {
+            constructor() {
+                this.currentQuestion = 0;
+                this.answers = {};
+                this.initializeElements();
+                this.attachEventListeners();
+            }
+
+            initializeElements() {
+                this.elements = {
+                    questionNumber: document.getElementById('quiz-app-question-number'),
+                    questionText: document.getElementById('quiz-app-question-text'),
+                    optionsContainer: document.getElementById('quiz-app-options-container'),
+                    prevBtn: document.getElementById('quiz-app-prev-btn'),
+                    nextBtn: document.getElementById('quiz-app-next-btn'),
+                    progressBar: document.getElementById('quiz-app-progress-bar'),
+                    progressText: document.getElementById('quiz-app-progress-text'),
+                    progressPercent: document.getElementById('quiz-app-progress-percent'),
+                    progressSection: document.getElementById('quiz-app-progress-section'),
+                    quizContainer: document.getElementById('quiz-app-quiz-container'),
+                    resultsContainer: document.getElementById('quiz-app-results-container'),
+                    restartBtn: document.getElementById('quiz-app-restart-btn')
+                };
+            }
+
+            attachEventListeners() {
+                this.elements.prevBtn.addEventListener('click', () => this.previousQuestion());
+                this.elements.nextBtn.addEventListener('click', () => this.nextQuestion());
+                this.elements.restartBtn.addEventListener('click', () => this.restart());
+            }
+
+            start() {
+                this.currentQuestion = 0;
+                this.answers = {};
+                this.showQuestion();
+                this.updateProgress();
+                this.updateNavigation();
+                this.elements.quizContainer.classList.remove('hidden');
+                this.elements.resultsContainer.classList.add('hidden');
+                this.elements.progressSection.classList.remove('hidden');
+            }
+
+            showQuestion() {
+                const question = quizAppQuestions[this.currentQuestion];
+                this.elements.questionNumber.textContent = `Question ${this.currentQuestion + 1}`;
+                this.elements.questionText.textContent = question.question;
+                
+                // Create options with animation
+                this.elements.optionsContainer.innerHTML = '';
+                question.options.forEach((option, index) => {
+                    const optionLetter = String.fromCharCode(65 + index);
+                    const optionDiv = document.createElement('div');
+                    optionDiv.className = 'quiz-app-option border-2 border-gray-200 dark:border-gray-600 rounded-xl p-5 cursor-pointer transition-all duration-200 quiz-app-fade-in';
+                    optionDiv.style.animationDelay = `${index * 0.1}s`;
+                    
+                    optionDiv.innerHTML = `
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 w-10 h-10 quiz-app-gradient-bg rounded-full flex items-center justify-center mr-4 mt-0.5 shadow-md">
+                                <span class="text-sm font-bold text-white">${optionLetter}</span>
+                            </div>
+                            <p class="text-gray-900 dark:text-white text-base leading-relaxed flex-1">${option}</p>
+                        </div>
+                    `;
+                    
+                    if (this.answers[this.currentQuestion] === index) {
+                        optionDiv.classList.add('quiz-app-selected');
+                    }
+                    
+                    optionDiv.addEventListener('click', () => this.selectOption(index));
+                    this.elements.optionsContainer.appendChild(optionDiv);
+                });
+            }
+
+            selectOption(index) {
+                this.answers[this.currentQuestion] = index;
+                
+                const options = this.elements.optionsContainer.querySelectorAll('.quiz-app-option');
+                options.forEach((option, i) => {
+                    if (i === index) {
+                        option.classList.add('quiz-app-selected');
+                    } else {
+                        option.classList.remove('quiz-app-selected');
+                    }
+                });
+                
+                this.updateNavigation();
+            }
+
+            updateProgress() {
+                const progress = ((this.currentQuestion + 1) / quizAppQuestions.length) * 100;
+                this.elements.progressBar.style.width = `${progress}%`;
+                this.elements.progressText.textContent = `Question ${this.currentQuestion + 1} of ${quizAppQuestions.length}`;
+                this.elements.progressPercent.textContent = `${Math.round(progress)}%`;
+            }
+
+            updateNavigation() {
+                this.elements.prevBtn.disabled = this.currentQuestion === 0;
+                
+                if (this.currentQuestion === quizAppQuestions.length - 1) {
+                    this.elements.nextBtn.textContent = 'Finish Quiz';
+                    this.elements.nextBtn.disabled = this.answers[this.currentQuestion] === undefined;
+                } else {
+                    this.elements.nextBtn.textContent = 'Next →';
+                    this.elements.nextBtn.disabled = this.answers[this.currentQuestion] === undefined;
+                }
+            }
+
+            previousQuestion() {
+                if (this.currentQuestion > 0) {
+                    this.currentQuestion--;
+                    this.showQuestion();
+                    this.updateProgress();
+                    this.updateNavigation();
+                }
+            }
+
+            nextQuestion() {
+                if (this.currentQuestion < quizAppQuestions.length - 1) {
+                    this.currentQuestion++;
+                    this.showQuestion();
+                    this.updateProgress();
+                    this.updateNavigation();
+                } else {
+                    this.finishQuiz();
+                }
+            }
+
+            calculateIdeologyScore() {
+                const answeredQuestions = Object.keys(this.answers);
+                const totalScore = answeredQuestions.reduce((sum, questionIndex) => {
+                    return sum + this.answers[questionIndex];
+                }, 0);
+                
+                const maxPossibleScore = answeredQuestions.length * 3; // 3 is max score per question (option D)
+                const scorePercentage = Math.round((totalScore / maxPossibleScore) * 100);
+                
+                return {
+                    score: scorePercentage,
+                    answeredCount: answeredQuestions.length,
+                    distribution: this.getAnswerDistribution()
+                };
+            }
+
+            getAnswerDistribution() {
+                const distribution = { A: 0, B: 0, C: 0, D: 0 };
+                Object.values(this.answers).forEach(answerIndex => {
+                    const letter = String.fromCharCode(65 + answerIndex);
+                    distribution[letter]++;
+                });
+                return distribution;
+            }
+
+            getIdeologyAnalysis(score) {
+                if (score <= 25) {
+                    return {
+                        category: 'Liberal/Progressive',
+                        badge: 'quiz-app-result-liberal',
+                        title: 'Liberal/Progressive Perspective',
+                        description: `
+                            <p class="mb-4">Your responses indicate a <strong>liberal and progressive perspective</strong> on Islamic issues. You tend to prioritize:</p>
+                            <ul class="list-disc pl-6 mb-4 space-y-2">
+                                <li>Scientific evidence and rational thinking over traditional religious interpretations</li>
+                                <li>Equal human rights regardless of religious boundaries</li>
+                                <li>Secular governance and separation of religion from state affairs</li>
+                                <li>Personal freedom and individual choice in matters of belief and lifestyle</li>
+                                <li>Peaceful coexistence and tolerance toward diverse viewpoints</li>
+                            </ul>
+                            <p class="mb-4">You likely view religion as a personal matter that should not interfere with modern democratic values, scientific progress, or universal human rights. Your approach suggests a preference for adapting religious practices to contemporary societal norms rather than the reverse.</p>
+                            <p><strong>Characteristics:</strong> Open-minded, rational, tolerant, progressive, science-oriented</p>
+                        `
+                    };
+                } else if (score <= 50) {
+                    return {
+                        category: 'Moderate/Balanced',
+                        badge: 'quiz-app-result-moderate',
+                        title: 'Moderate/Balanced Perspective',
+                        description: `
+                            <p class="mb-4">Your responses show a <strong>moderate and balanced approach</strong> to Islamic issues. You attempt to:</p>
+                            <ul class="list-disc pl-6 mb-4 space-y-2">
+                                <li>Reconcile Islamic teachings with modern scientific and social realities</li>
+                                <li>Balance religious values with contemporary human rights concepts</li>
+                                <li>Seek middle-ground solutions that respect both tradition and progress</li>
+                                <li>Maintain Islamic identity while adapting to modern society</li>
+                                <li>Promote dialogue and understanding between different viewpoints</li>
+                            </ul>
+                            <p class="mb-4">You likely believe that Islam can coexist with modern values through thoughtful interpretation and gradual adaptation. Your perspective suggests you value both religious heritage and contemporary social progress, seeking harmony between the two.</p>
+                            <p><strong>Characteristics:</strong> Balanced, diplomatic, adaptive, thoughtful, bridge-building</p>
+                        `
+                    };
+                } else if (score <= 75) {
+                    return {
+                        category: 'Conservative/Traditional',
+                        badge: 'quiz-app-result-conservative',
+                        title: 'Conservative/Traditional Perspective',
+                        description: `
+                            <p class="mb-4">Your responses reflect a <strong>conservative and traditional Islamic perspective</strong>. You tend to:</p>
+                            <ul class="list-disc pl-6 mb-4 space-y-2">
+                                <li>Prioritize Islamic teachings and Quranic guidance over secular ideologies</li>
+                                <li>Believe that Islamic principles should guide social and political systems</li>
+                                <li>View traditional Islamic values as superior to modern liberal concepts</li>
+                                <li>Support the gradual implementation of Islamic law and governance</li>
+                                <li>Emphasize the importance of religious identity in all aspects of life</li>
+                            </ul>
+                            <p class="mb-4">You likely believe that Islamic teachings provide the best framework for organizing society and that modern secular values often conflict with divine guidance. Your approach suggests a preference for traditional interpretations and established religious authorities.</p>
+                            <p><strong>Characteristics:</strong> Traditional, devout, principle-based, community-oriented, religiously committed</p>
+                        `
+                    };
+                } else {
+                    return {
+                        category: 'Extremist/Fundamentalist',
+                        badge: 'quiz-app-result-extremist',
+                        title: 'Extremist/Fundamentalist Perspective',
+                        description: `
+                        <p class="mb-4">Your responses indicate an <strong>extremist and fundamentalist approach</strong> to Islamic issues. You strongly believe in:</p>
+                            <ul class="list-disc pl-6 mb-4 space-y-2">
+                                <li>Absolute and literal interpretation of Islamic texts without compromise</li>
+                                <li>Complete rejection of secular values and non-Islamic systems</li>
+                                <li>Mandatory implementation of Shariah law, even through force if necessary</li>
+                                <li>Viewing non-believers and different interpretations as threats to be opposed</li>
+                                <li>Using any means necessary to establish and defend Islamic dominance</li>
+                            </ul>
+                            <p class="mb-4">Your perspective suggests a rigid, uncompromising worldview that sees little to no value in non-Islamic approaches to governance, science, or social organization. You likely view accommodation with modern secular society as unacceptable compromise.</p>
+                            <p class="text-red-600 dark:text-red-400 font-semibold">⚠️ Note: Extreme religious fundamentalism can lead to intolerance, discrimination, and in severe cases, support for violence against those with different beliefs.</p>
+                        `
+                    };
+                }
+            }
+
+            finishQuiz() {
+                const results = this.calculateIdeologyScore();
+                const analysis = this.getIdeologyAnalysis(results.score);
+                const completionRate = Math.round((results.answeredCount / quizAppQuestions.length) * 100);
+
+                // Update completion stats
+                document.getElementById('quiz-app-completion-rate').textContent = `${completionRate}%`;
+                document.getElementById('quiz-app-answered-count').textContent = `${results.answeredCount} out of ${quizAppQuestions.length} questions answered`;
+
+                // Update ideology analysis
+                const ideologyBadge = document.getElementById('quiz-app-ideology-badge');
+                ideologyBadge.textContent = analysis.category;
+                ideologyBadge.className = `inline-block px-4 py-2 rounded-full text-white font-bold text-lg mb-3 ${analysis.badge}`;
+                
+                document.getElementById('quiz-app-ideology-score').textContent = `${results.score}%`;
+                
+                // Update detailed analysis
+                document.getElementById('quiz-app-analysis-content').innerHTML = `
+                    <h4 class="text-xl font-bold mb-4">${analysis.title}</h4>
+                    ${analysis.description}
+                `;
+
+                // Update answer distribution
+                document.getElementById('quiz-app-option-a').textContent = results.distribution.A;
+                document.getElementById('quiz-app-option-b').textContent = results.distribution.B;
+                document.getElementById('quiz-app-option-c').textContent = results.distribution.C;
+                document.getElementById('quiz-app-option-d').textContent = results.distribution.D;
+
+                // Show results
+                this.elements.quizContainer.classList.add('hidden');
+                this.elements.progressSection.classList.add('hidden');
+                this.elements.resultsContainer.classList.remove('hidden');
+                
+                // Scroll to top
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            restart() {
+                this.start();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        // Initialize the quiz application
+        const quizApp = new QuizAppState();
+        quizApp.start();
+    </script>
+</body>
+</html>
